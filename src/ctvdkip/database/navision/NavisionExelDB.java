@@ -82,8 +82,8 @@ public class NavisionExelDB {
 				
 				boolean found = false;
 				
-				for (Iterator enum = _zahlbedausNavision.iterator() ; enum.hasNext() ; ){
-					if (_int.compareTo((Integer) enum.next()) == 0){
+				for (Iterator enumeration = _zahlbedausNavision.iterator() ; enumeration.hasNext() ; ){
+					if (_int.compareTo((Integer) enumeration.next()) == 0){
 						//already exists leaving it untouched
 /*
 						ApplicationLogger.getInstance().getLogger().info(
@@ -354,8 +354,8 @@ public class NavisionExelDB {
 			
 			boolean found = false;
 			
-			for(java.util.Enumeration enum = _fromFile1.elements();enum.hasMoreElements();){
-				if (0 == _kundennummer.compareTo((Integer) enum.nextElement())){
+			for(java.util.Enumeration enumeration = _fromFile1.elements();enumeration.hasMoreElements();){
+				if (0 == _kundennummer.compareTo((Integer) enumeration.nextElement())){
 					//already exists leaving it untouched
 					ApplicationLogger.getInstance().getLogger().severe(
 							"Kundennummer Value = "+ 
@@ -388,8 +388,8 @@ public class NavisionExelDB {
 			
 			boolean found = false;
 			
-			for(java.util.Enumeration enum = _fromFile2.elements();enum.hasMoreElements();){
-				if (0 == _kundennummer.compareTo((Integer) enum.nextElement())){
+			for(java.util.Enumeration enumeration = _fromFile2.elements();enumeration.hasMoreElements();){
+				if (0 == _kundennummer.compareTo((Integer) enumeration.nextElement())){
 					//already exists leaving it untouched
 					ApplicationLogger.getInstance().getLogger().severe(
 							"Kundennummer Value = "+ 
