@@ -1,17 +1,15 @@
 package ctvdkip;
 
 
-import ctvdkip.util.ApplicationLogger;
-import ctvdkip.business.Voks;
-import ctvdkip.database.navision.NavisionTxtDB;
-import ctvdkip.database.voks.AccountingRecordWriter;
-import ctvdkip.database.cobaswin.CobasWinDB;
-import ctvdkip.gui.SplashWindow;
-
-import javax.swing.*;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+
+import ctvdkip.business.Voks;
+import ctvdkip.database.cobaswin.CobasWinDB;
+import ctvdkip.database.voks.AccountingRecordWriter;
+import ctvdkip.gui.SplashWindow;
+import ctvdkip.util.ApplicationLogger;
 
 
 /**
@@ -57,38 +55,12 @@ public class CTVDKIP {
             doingCobasWin();
 
 		}
-		else if (_argument.equals("NavisionToVoks")){
-			ApplicationLogger.getInstance().getLogger().info(
-				"Parameter NavisionToVoks accepted"		
-			);
-            ApplicationLogger.getInstance().getLogger().info(
-				"Parameter NavisionToVoks: Funktion Disabled"
-			);
-            // doingNavision();
-		}
-        else if (_argument.equals("GenerateInitialAccountingRecordsFromNavision")){
-			ApplicationLogger.getInstance().getLogger().info(
-				"Parameter GenerateInitialAccountingRecordsFromNavision accepted"
-			);
-            ApplicationLogger.getInstance().getLogger().info(
-				"Parameter GenerateInitialAccountingRecordsFromNavision: Funktion Disabled"
-			);
-            //doingGenerateAccountingRecordsFromNavision();
-		}
+   
         else if (_argument.equals("GenerateAccountingRecordsFromCobasWin")){
 			ApplicationLogger.getInstance().getLogger().info(
 				"Parameter GenerateAccountingRecordsFromCobasWin accepted"
 			);
             doingGenerateAccountingRecordsFromCobasWin();
-		}
-        else if (_argument.equals("GenerateAccountingRecordsFromNavisionOP")){
-			ApplicationLogger.getInstance().getLogger().info(
-				"Parameter GenerateAccountingRecordsFromNavisionOP accepted"
-			);
-            ApplicationLogger.getInstance().getLogger().info(
-				"Parameter GenerateAccountingRecordsFromNavisionOP: Funktion Disabled"
-			);
-            // doingGenerateAccountingRecordsFromNavisionOP();
 		}
 		else{
 			ApplicationLogger.getInstance().getLogger().severe(
@@ -108,26 +80,6 @@ public class CTVDKIP {
 
 	};//end method main()
 
-    private static boolean doingNavision(){
-
-        Voks _voks;				//Voks Database
-
-        _voks = new Voks();
-
-        if(_voks.updateVoksWithNavisionData()){
-			ApplicationLogger.getInstance().getLogger().info(
-					"updating VoksDB with Navisison Data successfull ... :)"
-			);
-            return true;
-		}
-		else{
-			ApplicationLogger.getInstance().getLogger().severe(
-					"Critical Error :("
-			);
-            return false;
-		}
-
-    }
 
     private static boolean doingCobasWin(){
 
@@ -150,52 +102,7 @@ public class CTVDKIP {
 
         }
 
-    private static boolean doingGenerateAccountingRecordsFromNavision(){
-
-        NavisionTxtDB _navisiontextdatabase;
-        List _allnavisiondebitors;
-        List _allnavisionkreditors;
-        AccountingRecordWriter _recordwriter;
-        List _accountingrecords;
-
-
-        _navisiontextdatabase = new NavisionTxtDB();
-        _accountingrecords = new LinkedList();
-        _recordwriter = new AccountingRecordWriter();
-
-        // checking consistenz of navision files
-        if(!_navisiontextdatabase.checkConsistentFiles()){
-            ApplicationLogger.getInstance().getLogger().severe("NAVISION FILES NOT CONSISTENT :( ");
-            return false;
-        }
-
-        /**
-         * getting all debitors from navision
-         */
-        try {
-            _allnavisiondebitors = _navisiontextdatabase.getAllDebitors();
-        } catch (SQLException e) {
-            ApplicationLogger.getInstance().getLogger().severe("Could not get allnavisiondebitors :(");
-            return false;
-        }
-
-        /**
-         * getting all kreditors from navision
-         */
-        try {
-            _allnavisionkreditors = _navisiontextdatabase.getAllKreditors();
-        } catch (SQLException e) {
-            ApplicationLogger.getInstance().getLogger().severe("Could not get allnavisiondebitors :(");
-            return false;
-        }
-
-        _accountingrecords.addAll(_recordwriter.generateAccountingRecords(_allnavisiondebitors));
-        _accountingrecords.addAll(_recordwriter.generateAccountingRecords(_allnavisionkreditors));
-
-        _recordwriter.writeInitialAccountingRecordsToFile(_accountingrecords);
-
-        return true;
-    }
+   
 
     private static boolean doingGenerateAccountingRecordsFromCobasWin(){
 
@@ -235,38 +142,6 @@ public class CTVDKIP {
 
         return true;
     }
-
-    private static boolean doingGenerateAccountingRecordsFromNavisionOP(){
-
-        NavisionTxtDB _navisiontextdatabase;
-        AccountingRecordWriter _recordwriter;
-        List _accountingrecords;
-
-
-        _navisiontextdatabase = new NavisionTxtDB();
-        _accountingrecords = new LinkedList();
-        _recordwriter = new AccountingRecordWriter();
-
-        try{
-        _accountingrecords.addAll(_navisiontextdatabase.getAllInitizalDebitorOPAccountingRecords());
-        }
-        catch(SQLException ex){
-            ApplicationLogger.getInstance().getLogger().severe("Could NOT get AccountingRecords From Debitor OP :("+ex);
-            return false;
-        }
-
-        try{
-        _accountingrecords.addAll(_navisiontextdatabase.getAllInitizalKreditorOPAccountingRecords());
-        }
-        catch(SQLException ex){
-            ApplicationLogger.getInstance().getLogger().severe("Could NOT get AccountingRecords From Kreditor OP :("+ex);
-            return false;
-        }
-        _recordwriter.writeInitialAccountingRecordsToFile(_accountingrecords);
-
-        return true;
-    }
-
 
 
 
