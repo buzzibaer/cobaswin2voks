@@ -521,9 +521,9 @@ public class VoksDB {
 
             found = false;
 
-            for (Iterator enum = _vokspaymentcodes.iterator(); enum.hasNext();) {
+            for (Iterator enumeration = _vokspaymentcodes.iterator(); enumeration.hasNext();) {
 
-                Integer _voks_integer = (Integer) enum.next();
+                Integer _voks_integer = (Integer) enumeration.next();
 
                 if (0 == _compare.compareTo(_voks_integer)) {
 

@@ -41,12 +41,12 @@ public class CobasWin {
         r_splittarray[0] = _new_elements;
         r_splittarray[1] = _update_elements;
 
-        for (Iterator enum = p_elementstosplitt.iterator(); enum.hasNext();){
+        for (Iterator enumeration = p_elementstosplitt.iterator(); enumeration.hasNext();){
 
             VoksRecord _tmprecord;
             boolean _found;
 
-            _tmprecord = (VoksRecord) enum.next();
+            _tmprecord = (VoksRecord) enumeration.next();
             _found = false;
 
 
