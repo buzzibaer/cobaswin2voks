@@ -13,6 +13,8 @@ import java.util.List;
 
 import ctvdkip.database.cobaswin.CobasWinDB;
 import ctvdkip.database.voks.VoksDB;
+import ctvdkip.database.voks.VoksDebitorRecord;
+import ctvdkip.database.voks.VoksKreditorRecord;
 import ctvdkip.util.ApplicationLogger;
 
 /**
@@ -31,7 +33,7 @@ public class Voks {
 
     private boolean checkCobasWinPaymentCodes(){
 
-        List cobaswinPaymentCodes = null;			//PaymentCodes from cobaswin
+        List<Integer> cobaswinPaymentCodes = null;			//PaymentCodes from cobaswin
         CobasWinDB _cobaswindatabase;
         VoksDB _voksdatabase;
 
@@ -69,14 +71,15 @@ public class Voks {
         CobasWinDB _cobaswindatabase;
         CobasWin _cobaswinhelper;
         VoksDB  _voksdatabase;
-        List _allcobaswindebitors;
-        List _allcobaswinkreditors;
-        List _splittedvoksrecords[];
-        List _allvoksdebitors;
-        List _allvokskreditors;
+        List<VoksDebitorRecord> _allcobaswindebitors;
+        List<VoksKreditorRecord> _allcobaswinkreditors;
+        List<List<VoksDebitorRecord>> _splittedDebitorRecords;
+        List<List<VoksKreditorRecord>> _splittedKreditorRecords;
+        List<VoksDebitorRecord> _allvoksdebitors;
+        List<VoksKreditorRecord> _allvokskreditors;
 
-        _allcobaswindebitors = new LinkedList();
-        _allcobaswinkreditors =new LinkedList();
+        _allcobaswindebitors = new LinkedList<VoksDebitorRecord>();
+        _allcobaswinkreditors =new LinkedList<VoksKreditorRecord>();
         _cobaswindatabase = new CobasWinDB();
         _voksdatabase = new VoksDB();
         _cobaswinhelper = new CobasWin();
@@ -139,22 +142,22 @@ public class Voks {
         ApplicationLogger.getInstance().getLogger().info("getting all kreditors from cobaswin ... OK");
 
         // splitting debitos in NEW and UPDATED
-        _splittedvoksrecords = _cobaswinhelper.splitIntoUpdateAndInsert(_allcobaswindebitors, _allvoksdebitors);
+        _splittedDebitorRecords = _cobaswinhelper.splitIntoUpdateAndInsert(_allcobaswindebitors, _allvoksdebitors);
 
         // updating debitors
-        _voksdatabase.insertDebitorWithoutBankdata(_splittedvoksrecords[0]);
+        _voksdatabase.insertDebitorWithoutBankdata(_splittedDebitorRecords.get(0));
 
         // inserting new debitors
-        _voksdatabase.updateDebitorWithoutBankdata(_splittedvoksrecords[1]);
+        _voksdatabase.updateDebitorWithoutBankdata(_splittedDebitorRecords.get(1));
 
         // splitting kreditors in NEW and UPDATED
-        _splittedvoksrecords = _cobaswinhelper.splitIntoUpdateAndInsert(_allcobaswinkreditors, _allvokskreditors);
+        _splittedKreditorRecords = _cobaswinhelper.splitIntoUpdateAndInsert(_allcobaswinkreditors, _allvokskreditors);
 
         // updating kreditors
-        _voksdatabase.insertKreditorWithoutBankdata(_splittedvoksrecords[0]);
+        _voksdatabase.insertKreditorWithoutBankdata(_splittedKreditorRecords.get(0));
 
         // inserting new kreditors
-        _voksdatabase.updateKreditorWithoutBankdata(_splittedvoksrecords[1]);
+        _voksdatabase.updateKreditorWithoutBankdata(_splittedKreditorRecords.get(1));
 
 
 

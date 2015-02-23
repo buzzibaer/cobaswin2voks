@@ -7,6 +7,7 @@ import java.util.List;
 
 import ctvdkip.business.Voks;
 import ctvdkip.database.cobaswin.CobasWinDB;
+import ctvdkip.database.voks.AccountingRecord;
 import ctvdkip.database.voks.AccountingRecordWriter;
 import ctvdkip.gui.SplashWindow;
 import ctvdkip.util.ApplicationLogger;
@@ -108,11 +109,11 @@ public class CTVDKIP {
 
         CobasWinDB _cobaswindb;
         AccountingRecordWriter _recordwriter;
-        List _accountingrecords;
+        List<AccountingRecord> _accountingrecords;
 
 
         _cobaswindb = new CobasWinDB();
-        _accountingrecords = new LinkedList();
+        _accountingrecords = new LinkedList<AccountingRecord>();
         _recordwriter = new AccountingRecordWriter();
 
 

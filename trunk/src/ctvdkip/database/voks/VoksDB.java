@@ -34,15 +34,15 @@ public class VoksDB {
 	};
 	
 	
-	public List getAllVoksPaymentCodes(){
+	public List<Integer> getAllVoksPaymentCodes(){
 
         //local variables
 		String _query;
 		ResultSet _rs;
-		List _zahlbedausvoks;
+		List<Integer> _zahlbedausvoks;
 
         //init
-         _zahlbedausvoks = new LinkedList();
+         _zahlbedausvoks = new LinkedList<Integer>();
         _rs = null;
         _query = "SELECT DISTINCT "+
                 VoksTableKunden.ZAHLUNGSBEDINGUNGSCODE +
@@ -191,7 +191,7 @@ public class VoksDB {
 		this.close();
 	}
 
-     public boolean saveDebitor(List p_debitoren){
+     public boolean saveDebitor(List<VoksDebitorRecord> p_debitoren){
 
 
          this.open();
@@ -208,12 +208,12 @@ public class VoksDB {
          }
 
 
-         for (Iterator eone = p_debitoren.iterator(); eone.hasNext();){
+         for (Iterator<VoksDebitorRecord> eone = p_debitoren.iterator(); eone.hasNext();){
 
              VoksDebitorRecord _tmpdebitor;
              int _id;
 
-             _tmpdebitor = (VoksDebitorRecord) eone.next();
+             _tmpdebitor = eone.next();
 
              String _query;
                  _query = "INSERT INTO " +
@@ -344,7 +344,7 @@ public class VoksDB {
     }
 
 
-         public boolean saveKreditor(List p_kreditoren){
+         public boolean saveKreditor(List<VoksKreditorRecord> p_kreditoren){
 
 
          this.open();
@@ -361,12 +361,12 @@ public class VoksDB {
          }
 
 
-         for (Iterator eone = p_kreditoren.iterator(); eone.hasNext();){
+         for (Iterator<VoksKreditorRecord> eone = p_kreditoren.iterator(); eone.hasNext();){
 
              VoksKreditorRecord _tmpkreditor;
              int _id;
 
-             _tmpkreditor = (VoksKreditorRecord) eone.next();
+             _tmpkreditor = eone.next();
 
              String _query;
                  _query = "INSERT INTO " +
@@ -501,10 +501,10 @@ public class VoksDB {
      * import should be canceled if not equal
      * voks zahlungsbedingungen could be more = OK
      */
-    public boolean compareInputPaymentCodesToVoks(List p_paymentcodes) {
+    public boolean compareInputPaymentCodesToVoks(List<Integer> p_paymentcodes) {
 
 
-        List _vokspaymentcodes;
+        List<Integer> _vokspaymentcodes;
         Integer _compare;
         boolean found;
 
@@ -515,15 +515,15 @@ public class VoksDB {
 
 
 
-        for (Iterator enum_payment = p_paymentcodes.iterator(); enum_payment.hasNext();) {
-            _compare = (Integer) enum_payment.next();
+        for (Iterator<Integer> enum_payment = p_paymentcodes.iterator(); enum_payment.hasNext();) {
+            _compare = enum_payment.next();
 
 
             found = false;
 
-            for (Iterator enumeration = _vokspaymentcodes.iterator(); enumeration.hasNext();) {
+            for (Iterator<Integer> enumeration = _vokspaymentcodes.iterator(); enumeration.hasNext();) {
 
-                Integer _voks_integer = (Integer) enumeration.next();
+                Integer _voks_integer = enumeration.next();
 
                 if (0 == _compare.compareTo(_voks_integer)) {
 
@@ -547,7 +547,7 @@ public class VoksDB {
 
     };//end of method compareInputPaymentCodesToVoks()
 
-    public boolean insertDebitorWithoutBankdata(List p_debitoren){
+    public boolean insertDebitorWithoutBankdata(List<VoksDebitorRecord> p_debitoren){
 
         int count = 0;
 
@@ -567,7 +567,7 @@ public class VoksDB {
         }
 
 
-        for (Iterator eone = p_debitoren.iterator(); eone.hasNext();){
+        for (Iterator<VoksDebitorRecord> eone = p_debitoren.iterator(); eone.hasNext();){
 
             count ++;
 
@@ -576,7 +576,7 @@ public class VoksDB {
             VoksDebitorRecord _tmpdebitor;
             int _id;
 
-            _tmpdebitor = (VoksDebitorRecord) eone.next();
+            _tmpdebitor = eone.next();
 
             String _query;
                 _query = "INSERT INTO " +
@@ -702,7 +702,7 @@ public class VoksDB {
    }
 
 
-    public boolean updateDebitorWithoutBankdata(List p_voksrecordlist){
+    public boolean updateDebitorWithoutBankdata(List<VoksDebitorRecord> p_voksrecordlist){
 
         int count;
 
@@ -723,13 +723,13 @@ public class VoksDB {
             }
 
 
-            for (Iterator eone = p_voksrecordlist.iterator(); eone.hasNext();){
+            for (Iterator<VoksDebitorRecord> eone = p_voksrecordlist.iterator(); eone.hasNext();){
 
                 count ++;
                 ApplicationLogger.getInstance().getLogger().info("updating " + count + " / " +  p_voksrecordlist.size());
                 VoksDebitorRecord _tmpvoksrecord;
 
-                _tmpvoksrecord = (VoksDebitorRecord) eone.next();
+                _tmpvoksrecord = eone.next();
 
                 String _query;
                     _query = "UPDATE " +
@@ -825,15 +825,15 @@ public class VoksDB {
             return true;
        }
 
-    public List getAllDebitors() throws SQLException {
+    public List<VoksDebitorRecord> getAllDebitors() throws SQLException {
 
         // local variables
-        List _voksrecordlist;
+        List<VoksDebitorRecord> _voksrecordlist;
         ResultSet _rs;
         String _query;
 
         //init
-        _voksrecordlist = new LinkedList();
+        _voksrecordlist = new LinkedList<VoksDebitorRecord>();
         _query = "SELECT" +
                 " A." + VoksTableAdress.KUNDENNUMMER       + "," +
                 " A." + VoksTableAdress.NAME               + "," +
@@ -903,15 +903,15 @@ public class VoksDB {
         return _voksrecordlist;
     }
 
-    public List getAllKreditors() throws SQLException {
+    public List<VoksKreditorRecord> getAllKreditors() throws SQLException {
 
         // local variables
-        List _voksrecordlist;
+        List<VoksKreditorRecord> _voksrecordlist;
         ResultSet _rs;
         String _query;
 
         //init
-        _voksrecordlist = new LinkedList();
+        _voksrecordlist = new LinkedList<VoksKreditorRecord>();
         _query = "SELECT" +
                 " A." + VoksTableAdress.LIEFERANTENNUMMER       + "," +
                 " A." + VoksTableAdress.NAME               + "," +
@@ -981,7 +981,7 @@ public class VoksDB {
         return _voksrecordlist;
     }
 
-    public boolean updateKreditorWithoutBankdata(List p_voksrecordlist){
+    public boolean updateKreditorWithoutBankdata(List<VoksKreditorRecord> p_voksrecordlist){
 
         int count;
 
@@ -1002,13 +1002,13 @@ public class VoksDB {
             }
 
 
-            for (Iterator eone = p_voksrecordlist.iterator(); eone.hasNext();){
+            for (Iterator<VoksKreditorRecord> eone = p_voksrecordlist.iterator(); eone.hasNext();){
 
                 count ++;
                 ApplicationLogger.getInstance().getLogger().info("updating " + count + " / " +  p_voksrecordlist.size());
                 VoksKreditorRecord _tmpvoksrecord;
 
-                _tmpvoksrecord = (VoksKreditorRecord) eone.next();
+                _tmpvoksrecord = eone.next();
 
                 String _query;
                     _query = "UPDATE " +
@@ -1104,7 +1104,7 @@ public class VoksDB {
             return true;
        }
 
-    public boolean insertKreditorWithoutBankdata(List p_voksrecords){
+    public boolean insertKreditorWithoutBankdata(List<VoksKreditorRecord> p_voksrecords){
 
             int count = 0;
 
@@ -1124,7 +1124,7 @@ public class VoksDB {
             }
 
 
-            for (Iterator eone = p_voksrecords.iterator(); eone.hasNext();){
+            for (Iterator<VoksKreditorRecord> eone = p_voksrecords.iterator(); eone.hasNext();){
 
                 count ++;
 
@@ -1133,7 +1133,7 @@ public class VoksDB {
                 VoksKreditorRecord _tmprecord;
                 int _id;
 
-                _tmprecord = (VoksKreditorRecord) eone.next();
+                _tmprecord = eone.next();
 
                 String _query;
                     _query = "INSERT INTO " +
