@@ -2,9 +2,9 @@ package ctvdkip;
 
 
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 
+import ctvdkip.business.CobasWin;
 import ctvdkip.business.Voks;
 import ctvdkip.database.cobaswin.CobasWinDB;
 import ctvdkip.database.voks.AccountingRecord;
@@ -22,10 +22,6 @@ public class CTVDKIP {
 
 	public static void main(String[] p_args) {
 		
-		//***********************************************************************
-        String _argument;							//ARGS from stdin
-		//***********************************************************************
-        
 		//Logging Application Start
 		ApplicationLogger.getInstance().getLogger().info("Application started ...");
 
@@ -36,24 +32,33 @@ public class CTVDKIP {
 		if (1 > p_args.length){
 			System.out.println("Usage  : Specify ImportType as Parameter of this Programm\n");
 			System.out.println("Example: CobasWinToVoks or NavisionToVoks\n");
+			System.out.println("HIC SUNT DRACONIS: Specifying a second parameter means using 7->6 account number migration\n");
 			System.out.println("System is exiting ...\n");
 			ApplicationLogger.getInstance().getLogger().severe(
 				"Usage  : Specify ImportType as Parameter of this Programm | "+
 				"Example: CobasWinToVoks or NavisionToVoks | "+
+				"HIC SUNT DRACONIS: Specifying a second parameter means using 7->6 account number migration | "+
 				"System is exiting ..."
 			);
 			System.exit(0);
 		}
 		
 		//get argument
-		_argument = p_args[0];
+		final String _argument = p_args[0];
+		final boolean doAccountNumberDownsizing = p_args.length >= 2;
+		
+		if (doAccountNumberDownsizing) {
+			ApplicationLogger.getInstance().getLogger().info("Using 7->6 account number migration!");
+		} else {
+			ApplicationLogger.getInstance().getLogger().info("Not using account number migration!");
+		}
 		
 		// checking arg
 		if (_argument.equals("CobasWinToVoks")) {
 			ApplicationLogger.getInstance().getLogger().info(
 				"Parameter CobasWinToVoks accepted"
 			);
-            doingCobasWin();
+            doingCobasWin(doAccountNumberDownsizing);
 
 		}
    
@@ -61,7 +66,7 @@ public class CTVDKIP {
 			ApplicationLogger.getInstance().getLogger().info(
 				"Parameter GenerateAccountingRecordsFromCobasWin accepted"
 			);
-            doingGenerateAccountingRecordsFromCobasWin();
+            doingGenerateAccountingRecordsFromCobasWin(doAccountNumberDownsizing);
 		}
 		else{
 			ApplicationLogger.getInstance().getLogger().severe(
@@ -82,13 +87,11 @@ public class CTVDKIP {
 	};//end method main()
 
 
-    private static boolean doingCobasWin(){
+    private static boolean doingCobasWin(final boolean doAccountNumberDownsizing){
 
-            Voks _voks;				//Voks Database
+            final Voks _voks = new Voks();				//Voks Database
 
-            _voks = new Voks();
-
-            if(_voks.updateVoksWithCobasWinData()){
+            if(_voks.updateVoksWithCobasWinData(doAccountNumberDownsizing)){
                 ApplicationLogger.getInstance().getLogger().info(
                         "updating VoksDB with cobaswin Data successfull ... :)"
                 );
@@ -105,25 +108,25 @@ public class CTVDKIP {
 
    
 
-    private static boolean doingGenerateAccountingRecordsFromCobasWin(){
+    private static boolean doingGenerateAccountingRecordsFromCobasWin(final boolean doAccountNumberDownsizing){
 
-        CobasWinDB _cobaswindb;
-        AccountingRecordWriter _recordwriter;
-        List<AccountingRecord> _accountingrecords;
+        final CobasWinDB _cobaswindb = new CobasWinDB();
+        final AccountingRecordWriter _recordwriter = new AccountingRecordWriter();
+        final List<AccountingRecord> _accountingrecords;
 
-
-        _cobaswindb = new CobasWinDB();
-        _accountingrecords = new LinkedList<AccountingRecord>();
-        _recordwriter = new AccountingRecordWriter();
 
 
         try{
             _accountingrecords = _cobaswindb.getAllNewAcountingRecords();
-
         }
         catch(SQLException sql_ex){
             ApplicationLogger.getInstance().getLogger().severe("Could not get AccountingRecords from CobasWin :(");
             return false;
+        }
+        
+        if (doAccountNumberDownsizing) {
+        	CobasWin.migrateAccountRecordsFrom7to6Digits(_accountingrecords);
+        	ApplicationLogger.getInstance().getLogger().info("Migrated all account numbers from 7 to 6 digits");
         }
 
 
