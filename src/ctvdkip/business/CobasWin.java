@@ -27,36 +27,35 @@ public class CobasWin {
      * @param p_compareelements the List with all Kreditors/Debitors from CobasWin for comparison
      * @return LinkedList[] 0 = New Debitors/Kreditors (to insert) 1 = Update Debitors/Kreditors (for update)
      */
-    public List[] splitIntoUpdateAndInsert(List p_elementstosplitt, List p_compareelements){
+    public <E extends VoksRecord> List<List<E>> splitIntoUpdateAndInsert(List<E> p_elementstosplitt, List<E> p_compareelements){
 
         // local variables
-        LinkedList[] r_splittarray;
-        LinkedList _new_elements;
-        LinkedList _update_elements;
+        LinkedList<E> _new_elements;
+        LinkedList<E> _update_elements;
 
         //init
-        r_splittarray = new LinkedList[2];
-        _new_elements = new LinkedList();
-        _update_elements = new LinkedList();
-        r_splittarray[0] = _new_elements;
-        r_splittarray[1] = _update_elements;
+        _new_elements = new LinkedList<E>();
+        _update_elements = new LinkedList<E>();
+        LinkedList<List<E>> tmpList = new LinkedList<List<E>>();
+        tmpList.add(_new_elements);
+        tmpList.add(_update_elements);
 
-        for (Iterator enumeration = p_elementstosplitt.iterator(); enumeration.hasNext();){
+        for (Iterator<E> iterator = p_elementstosplitt.iterator(); iterator.hasNext();){
 
-            VoksRecord _tmprecord;
+            E _tmprecord;
             boolean _found;
 
-            _tmprecord = (VoksRecord) enumeration.next();
+            _tmprecord = iterator.next();
             _found = false;
 
 
             if(_tmprecord.getKundenNr().equalsIgnoreCase("")){
 
                 // Kreditor detected
-                for (Iterator it = p_compareelements.iterator(); it.hasNext();){
+                for (Iterator<E> it = p_compareelements.iterator(); it.hasNext();){
 
-                    VoksRecord _comparerecord;
-                    _comparerecord = (VoksRecord) it.next();
+                    E _comparerecord;
+                    _comparerecord = it.next();
 
                     if(_tmprecord.getLieferantenNr().equalsIgnoreCase(_comparerecord.getLieferantenNr())){
 
@@ -85,10 +84,10 @@ public class CobasWin {
             else{
 
                 //Debitor detected
-                for (Iterator it = p_compareelements.iterator(); it.hasNext();){
+                for (Iterator<E> it = p_compareelements.iterator(); it.hasNext();){
 
-                    VoksRecord _comparerecord;
-                    _comparerecord = (VoksRecord) it.next();
+                    E _comparerecord;
+                    _comparerecord = it.next();
 
                     if(_tmprecord.getKundenNr().equalsIgnoreCase(_comparerecord.getKundenNr())){
 
@@ -118,9 +117,6 @@ public class CobasWin {
         ApplicationLogger.getInstance().getLogger().info("SplitList for NEW Elements Size = " + _new_elements.size());
         ApplicationLogger.getInstance().getLogger().info("SplitList for UPDATE Elements Size = " + _update_elements.size());
 
-        return r_splittarray;
-
-
-
+        return tmpList;
     }
 }

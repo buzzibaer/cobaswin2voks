@@ -7,8 +7,6 @@
 package ctvdkip.database.cobaswin;
 
 import ctvdkip.util.ApplicationLogger;
-import ctvdkip.database.voks.VoksDebitorRecord;
-import ctvdkip.database.voks.VoksKreditorRecord;
 import ctvdkip.database.voks.*;
 
 import java.sql.*;
@@ -222,13 +220,13 @@ public class CobasWinDB {
 		return r_debitor;
 	} 
 	
-	public List getAllPaymentCodes () throws SQLException {
+	public List<Integer> getAllPaymentCodes () throws SQLException {
 
         // ******************************************************
         // local variables
 		String _query;
 		ResultSet _rs;
-        LinkedList r_zbcodesauscobaswin;
+        LinkedList<Integer> r_zbcodesauscobaswin;
 
 
         //******************************************************
@@ -238,7 +236,7 @@ public class CobasWinDB {
                 " FROM "+
                 CobasWinTableDebitor.DEBITORTABLE;
         _rs = null;
-        r_zbcodesauscobaswin = new LinkedList();
+        r_zbcodesauscobaswin = new LinkedList<Integer>();
 
 
 		this.open();
@@ -289,11 +287,11 @@ public class CobasWinDB {
 		return r_zbcodesauscobaswin;
 	}// end of method getAllPaymentCodes()
 
-    public List getAllDebitors() throws SQLException{
+    public List<VoksDebitorRecord> getAllDebitors() throws SQLException{
 
         // *******************************************************
         // local variavles
-		List r_list;
+		List<VoksDebitorRecord> r_list;
         String _query;
 		ResultSet _rs;
 		Statement _stmt;
@@ -301,7 +299,7 @@ public class CobasWinDB {
 
         // *******************************************************
         // init
-        r_list = new LinkedList();
+        r_list = new LinkedList<VoksDebitorRecord>();
         _query = "SELECT"+
                 " D."+ CobasWinTableDebitor.KUNDENNUMMER + "," +
                 " D."+ CobasWinTableDebitor.NAME + "," +
@@ -381,11 +379,11 @@ public class CobasWinDB {
 
     }
 
-    public List getAllKreditors() throws SQLException{
+    public List<VoksKreditorRecord> getAllKreditors() throws SQLException{
 
         // *******************************************************
         // local variavles
-		List r_list;
+		List<VoksKreditorRecord> r_list;
         String _query;
 		ResultSet _rs;
 		Statement _stmt;
@@ -393,7 +391,7 @@ public class CobasWinDB {
 
         // *******************************************************
         // init
-        r_list = new LinkedList();
+        r_list = new LinkedList<VoksKreditorRecord>();
         _query = "SELECT"+
                 " D."+ CobasWinTableKreditor.LIEFERANTENNUMMER + "," +
                 " D."+ CobasWinTableKreditor.NAME + "," +
@@ -477,16 +475,16 @@ public class CobasWinDB {
 
     }
 
-    public List getAllNewAcountingRecords() throws SQLException {
+    public List<AccountingRecord> getAllNewAcountingRecords() throws SQLException {
 
         //local variables
-        List r_list;
+        List<AccountingRecord> r_list;
         String _query;
 		ResultSet _rs;
 		Statement _stmt;
 
         // init
-        r_list = new LinkedList();
+        r_list = new LinkedList<AccountingRecord>();
 
 
         _query = "SELECT "+
@@ -568,11 +566,10 @@ public class CobasWinDB {
         return r_list;
     }
 
-    public boolean setAccountingRecordsVerarbeitet(List p_records) {
+    public boolean setAccountingRecordsVerarbeitet(List<AccountingRecord> p_records) {
 
         //local variables
         String _query;
-		ResultSet _rs;
 		Statement _stmt;
 
         this.open();
@@ -589,9 +586,9 @@ No Support for Transaktion Logging
                 return false;
             }
 */
-        for(Iterator it = p_records.iterator();it.hasNext();){
+        for(Iterator<AccountingRecord> it = p_records.iterator();it.hasNext();){
 
-            AccountingRecord _tmprecord = (AccountingRecord) it.next();
+            AccountingRecord _tmprecord = it.next();
 
             _query = "UPDATE "+
                 CobasWinTableBoeking.BOEKINGTABLE +

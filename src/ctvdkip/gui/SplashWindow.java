@@ -20,8 +20,9 @@ import java.net.URL;
 
 public class SplashWindow extends JWindow {
 
-
-  public SplashWindow(URL p_url, int p_waitTime){
+	private static final long serialVersionUID = 1L;
+	
+public SplashWindow(URL p_url, int p_waitTime){
       Image image = Toolkit.getDefaultToolkit().getImage(p_url);
       new SplashWindow(new ImageIcon(image),p_waitTime);
   };

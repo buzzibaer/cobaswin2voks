@@ -16,7 +16,7 @@ import java.io.BufferedWriter;
  */
 public class AccountingRecordWriter {
 
-    public boolean writeInitialAccountingRecordsToFile(List p_accountingrecords){
+    public boolean writeInitialAccountingRecordsToFile(List<AccountingRecord> p_accountingrecords){
 
         FileWriter _filewriter;
         BufferedWriter _bufferedwriter;
@@ -54,9 +54,9 @@ public class AccountingRecordWriter {
             return false;
         }
 
-        for (Iterator it = p_accountingrecords.iterator();it.hasNext();){
+        for (Iterator<AccountingRecord> it = p_accountingrecords.iterator();it.hasNext();){
 
-            AccountingRecord _tmprecord = (AccountingRecord) it.next();
+            AccountingRecord _tmprecord = it.next();
             try {
                 _bufferedwriter.write(
                         _tmprecord.getBelegDatum() +  ":" +
@@ -97,16 +97,16 @@ public class AccountingRecordWriter {
 
     }
 
-    public List generateAccountingRecords(List p_voksrecords){
+    public List<AccountingRecord> generateAccountingRecords(List<VoksRecord> p_voksrecords){
 
-            LinkedList r_list;
+            LinkedList<AccountingRecord> r_list;
 
-            r_list = new LinkedList();
+            r_list = new LinkedList<AccountingRecord>();
 
-            for(Iterator it = p_voksrecords.iterator(); it.hasNext();){
+            for(Iterator<VoksRecord> it = p_voksrecords.iterator(); it.hasNext();){
 
                 VoksRecord _voksrecord;
-                _voksrecord = (VoksRecord) it.next();
+                _voksrecord = it.next();
 
                 if (_voksrecord instanceof VoksDebitorRecord){
                     //found debitor element
@@ -164,7 +164,7 @@ public class AccountingRecordWriter {
             return r_list;
         }
 
-    public boolean writeCobasWinAccountingRecordsToFile(List p_accountingrecords){
+    public boolean writeCobasWinAccountingRecordsToFile(List<AccountingRecord> p_accountingrecords){
 
         FileWriter _filewriter;
         BufferedWriter _bufferedwriter;
@@ -202,9 +202,9 @@ public class AccountingRecordWriter {
             return false;
         }
 
-        for (Iterator it = p_accountingrecords.iterator();it.hasNext();){
+        for (Iterator<AccountingRecord> it = p_accountingrecords.iterator();it.hasNext();){
 
-            AccountingRecord _tmprecord = (AccountingRecord) it.next();
+            AccountingRecord _tmprecord = it.next();
             try {
                 _bufferedwriter.write(
                         _tmprecord.getBelegDatum() +  ":" +
