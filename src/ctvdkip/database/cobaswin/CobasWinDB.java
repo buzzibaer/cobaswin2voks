@@ -6,13 +6,18 @@
  */
 package ctvdkip.database.cobaswin;
 
-import ctvdkip.util.ApplicationLogger;
-import ctvdkip.database.voks.*;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Iterator;
+
+import ctvdkip.database.voks.AccountingRecord;
+import ctvdkip.database.voks.VoksDebitorRecord;
+import ctvdkip.database.voks.VoksKreditorRecord;
+import ctvdkip.util.ApplicationLogger;
 
 
 /**
@@ -478,16 +483,11 @@ public class CobasWinDB {
     public List<AccountingRecord> getAllNewAcountingRecords() throws SQLException {
 
         //local variables
-        List<AccountingRecord> r_list;
-        String _query;
-		ResultSet _rs;
-		Statement _stmt;
+        final List<AccountingRecord> r_list = new LinkedList<AccountingRecord>();
+		final ResultSet _rs;
+		final Statement _stmt;
 
-        // init
-        r_list = new LinkedList<AccountingRecord>();
-
-
-        _query = "SELECT "+
+		final String _query = "SELECT "+
                 CobasWinTableBoeking.RECORDNUMMER + "," +
                 CobasWinTableBoeking.BELEGDATUM + "," +
                 CobasWinTableBoeking.BELEGNUMMER + "," +
@@ -535,8 +535,7 @@ public class CobasWinDB {
 
         while (_rs.next()){
 
-            AccountingRecord _tmprecord;
-            _tmprecord = new AccountingRecord();
+            final AccountingRecord _tmprecord = new AccountingRecord();
 
             _tmprecord.setRecordNummer(_rs.getString(CobasWinTableBoeking.RECORDNUMMER));
             _tmprecord.setBelegDatum(_rs.getDate(CobasWinTableBoeking.BELEGDATUM));
@@ -586,9 +585,7 @@ No Support for Transaktion Logging
                 return false;
             }
 */
-        for(Iterator<AccountingRecord> it = p_records.iterator();it.hasNext();){
-
-            AccountingRecord _tmprecord = it.next();
+        for(final AccountingRecord _tmprecord : p_records) {
 
             _query = "UPDATE "+
                 CobasWinTableBoeking.BOEKINGTABLE +

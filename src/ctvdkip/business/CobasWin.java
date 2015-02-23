@@ -1,11 +1,11 @@
 package ctvdkip.business;
 
-import ctvdkip.database.voks.VoksRecord;
-import ctvdkip.util.ApplicationLogger;
-
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Iterator;
+
+import ctvdkip.database.voks.AccountingRecord;
+import ctvdkip.database.voks.VoksRecord;
+import ctvdkip.util.ApplicationLogger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,35 +27,24 @@ public class CobasWin {
      * @param p_compareelements the List with all Kreditors/Debitors from CobasWin for comparison
      * @return LinkedList[] 0 = New Debitors/Kreditors (to insert) 1 = Update Debitors/Kreditors (for update)
      */
-    public <E extends VoksRecord> List<List<E>> splitIntoUpdateAndInsert(List<E> p_elementstosplitt, List<E> p_compareelements){
+    public <E extends VoksRecord> List<List<E>> splitIntoUpdateAndInsert(final List<E> p_elementstosplitt, final List<E> p_compareelements){
 
         // local variables
-        LinkedList<E> _new_elements;
-        LinkedList<E> _update_elements;
+        final LinkedList<E> _new_elements = new LinkedList<E>();
+        final LinkedList<E> _update_elements = new LinkedList<E>();
+        final LinkedList<List<E>> tmpList = new LinkedList<List<E>>();
 
-        //init
-        _new_elements = new LinkedList<E>();
-        _update_elements = new LinkedList<E>();
-        LinkedList<List<E>> tmpList = new LinkedList<List<E>>();
         tmpList.add(_new_elements);
         tmpList.add(_update_elements);
 
-        for (Iterator<E> iterator = p_elementstosplitt.iterator(); iterator.hasNext();){
-
-            E _tmprecord;
-            boolean _found;
-
-            _tmprecord = iterator.next();
-            _found = false;
-
+        for (final E _tmprecord : p_elementstosplitt) {
+        	
+            boolean _found = false;
 
             if(_tmprecord.getKundenNr().equalsIgnoreCase("")){
 
                 // Kreditor detected
-                for (Iterator<E> it = p_compareelements.iterator(); it.hasNext();){
-
-                    E _comparerecord;
-                    _comparerecord = it.next();
+            	for (final E _comparerecord : p_compareelements) {
 
                     if(_tmprecord.getLieferantenNr().equalsIgnoreCase(_comparerecord.getLieferantenNr())){
 
@@ -84,10 +73,7 @@ public class CobasWin {
             else{
 
                 //Debitor detected
-                for (Iterator<E> it = p_compareelements.iterator(); it.hasNext();){
-
-                    E _comparerecord;
-                    _comparerecord = it.next();
+            	for (final E _comparerecord : p_compareelements) {
 
                     if(_tmprecord.getKundenNr().equalsIgnoreCase(_comparerecord.getKundenNr())){
 
@@ -118,5 +104,43 @@ public class CobasWin {
         ApplicationLogger.getInstance().getLogger().info("SplitList for UPDATE Elements Size = " + _update_elements.size());
 
         return tmpList;
+    }
+    
+    public static void migrateAccountNumbersFrom7To6(final List<? extends VoksRecord> list) {
+    	for (VoksRecord current : list) {
+    		if (current.getKundenNr().equalsIgnoreCase("")) {
+    			final String lfNr = current.getLieferantenNr();
+    			if (lfNr.length() == 7) {
+    				current.setLieferantenNr(lfNr.substring(1));
+    			} else {
+    				ApplicationLogger.getInstance().getLogger().warning("Found 6-digit lieferantennummer " + lfNr + ", not migrating");
+    			}
+    		} else {
+    			final String kdNr = current.getKundenNr();
+    			if (kdNr.length() == 7) {
+    				current.setKundenNr(kdNr.substring(1));
+    			} else {
+    				ApplicationLogger.getInstance().getLogger().warning("Found 6-digit kundennummer " + kdNr + ", not migrating");
+    			}
+    		}
+    	}
+    }
+    
+    public static void migrateAccountRecordsFrom7to6Digits(final List<AccountingRecord> list) {
+    	for (AccountingRecord current : list) {
+    		String kto = current.getKonto();
+    		if (kto.length() == 7) {
+    			current.setKonto(kto.substring(1));
+    		} else {
+    			ApplicationLogger.getInstance().getLogger().warning("Found 6-digit account number " + kto + " in record " + current.getRecordNummer() + ", not migrating");
+    		}
+    		
+    		String ggKto = current.getGegenKonto();
+    		if (ggKto.length() == 7) {
+    			current.setGegenKonto(ggKto.substring(1));
+    		} else {
+    			ApplicationLogger.getInstance().getLogger().warning("Found 6-digit account number " + kto + " in record " + current.getRecordNummer() + ", not migrating");
+    		}
+    	}
     }
 }

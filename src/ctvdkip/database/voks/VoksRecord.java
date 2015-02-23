@@ -26,6 +26,7 @@ public abstract class VoksRecord {
     protected String ZahlungsBedingungsCode; 	//Zahlungsbedingungen
     private String Email;
     private String Saldo;
+    private String LieferantenNr;
 
     public String getLieferantenNr() {
         return LieferantenNr;
@@ -43,7 +44,6 @@ public abstract class VoksRecord {
 
     }
 
-    private String LieferantenNr;
 
     public VoksRecord() {
 

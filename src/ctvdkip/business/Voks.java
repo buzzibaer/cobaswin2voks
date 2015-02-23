@@ -8,7 +8,6 @@ package ctvdkip.business;
 
 
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 
 import ctvdkip.database.cobaswin.CobasWinDB;
@@ -66,23 +65,17 @@ public class Voks {
     }
 
 
-    public boolean updateVoksWithCobasWinData(){
+    public boolean updateVoksWithCobasWinData(final boolean doAccountNumberDownsizing){
 
-        CobasWinDB _cobaswindatabase;
-        CobasWin _cobaswinhelper;
-        VoksDB  _voksdatabase;
-        List<VoksDebitorRecord> _allcobaswindebitors;
-        List<VoksKreditorRecord> _allcobaswinkreditors;
-        List<List<VoksDebitorRecord>> _splittedDebitorRecords;
-        List<List<VoksKreditorRecord>> _splittedKreditorRecords;
-        List<VoksDebitorRecord> _allvoksdebitors;
-        List<VoksKreditorRecord> _allvokskreditors;
-
-        _allcobaswindebitors = new LinkedList<VoksDebitorRecord>();
-        _allcobaswinkreditors =new LinkedList<VoksKreditorRecord>();
-        _cobaswindatabase = new CobasWinDB();
-        _voksdatabase = new VoksDB();
-        _cobaswinhelper = new CobasWin();
+        final CobasWinDB _cobaswindatabase = new CobasWinDB();
+        final VoksDB _voksdatabase = new VoksDB();
+        final CobasWin _cobaswinhelper = new CobasWin();
+        final List<VoksDebitorRecord> _allcobaswindebitors;
+        final List<VoksKreditorRecord> _allcobaswinkreditors;
+        final List<List<VoksDebitorRecord>> _splittedDebitorRecords;
+        final List<List<VoksKreditorRecord>> _splittedKreditorRecords;
+        final List<VoksDebitorRecord> _allvoksdebitors;
+        final List<VoksKreditorRecord> _allvokskreditors;
 
         // checkCobasWinPaymentCodes
         ApplicationLogger.getInstance().getLogger().info("checking cobaswin payment codes ...");
@@ -141,7 +134,13 @@ public class Voks {
         }
         ApplicationLogger.getInstance().getLogger().info("getting all kreditors from cobaswin ... OK");
 
-        // splitting debitos in NEW and UPDATED
+        if (doAccountNumberDownsizing) {
+        	CobasWin.migrateAccountNumbersFrom7To6(_allcobaswindebitors);
+        	CobasWin.migrateAccountNumbersFrom7To6(_allcobaswinkreditors);
+        	ApplicationLogger.getInstance().getLogger().info("migrating all debitors and kreditors  account numbers from cobaswin ... OK");
+        }
+        
+        // splitting debitors in NEW and UPDATED
         _splittedDebitorRecords = _cobaswinhelper.splitIntoUpdateAndInsert(_allcobaswindebitors, _allvoksdebitors);
 
         // updating debitors
