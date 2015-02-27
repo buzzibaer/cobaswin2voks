@@ -29,7 +29,7 @@ public class CTVDKIP {
 		new SplashWindow(SplashWindow.class.getResource("kuepper.jpg"),36000);
 
 		// checking input
-		if (1 > p_args.length){
+		if (2 > p_args.length){
 			System.out.println("Usage  : Specify ImportType as Parameter of this Programm\n");
 			System.out.println("Example: CobasWinToVoks or NavisionToVoks\n");
 			System.out.println("HIC SUNT DRACONIS: Specifying a second parameter means using 7->6 account number migration\n");
