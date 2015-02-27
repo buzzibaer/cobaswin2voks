@@ -113,14 +113,14 @@ public class CobasWin {
     			if (lfNr.length() == 7) {
     				current.setLieferantenNr(lfNr.substring(1));
     			} else {
-    				ApplicationLogger.getInstance().getLogger().warning("Found 6-digit lieferantennummer " + lfNr + ", not migrating");
+    				ApplicationLogger.getInstance().getLogger().warning("Found non 7-digit lieferantennummer " + lfNr + ", not migrating");
     			}
     		} else {
     			final String kdNr = current.getKundenNr();
     			if (kdNr.length() == 7) {
     				current.setKundenNr(kdNr.substring(1));
     			} else {
-    				ApplicationLogger.getInstance().getLogger().warning("Found 6-digit kundennummer " + kdNr + ", not migrating");
+    				ApplicationLogger.getInstance().getLogger().warning("Found non 7-digit kundennummer " + kdNr + ", not migrating");
     			}
     		}
     	}
@@ -132,14 +132,14 @@ public class CobasWin {
     		if (kto.length() == 7) {
     			current.setKonto(kto.substring(1));
     		} else {
-    			ApplicationLogger.getInstance().getLogger().warning("Found 6-digit account number " + kto + " in record " + current.getRecordNummer() + ", not migrating");
+    			ApplicationLogger.getInstance().getLogger().warning("Found non 7-digit account number " + kto + " in record " + current.getRecordNummer() + " for receipt + " + current.getBelegNummer() + ", not migrating");
     		}
     		
     		String ggKto = current.getGegenKonto();
     		if (ggKto.length() == 7) {
     			current.setGegenKonto(ggKto.substring(1));
     		} else {
-    			ApplicationLogger.getInstance().getLogger().warning("Found 6-digit account number " + ggKto + " in record " + current.getRecordNummer() + ", not migrating");
+    			ApplicationLogger.getInstance().getLogger().warning("Found non 7-digit account number " + ggKto + " in record " + current.getRecordNummer() + " for receipt + " + current.getBelegNummer() + ", not migrating");
     		}
     	}
     }
