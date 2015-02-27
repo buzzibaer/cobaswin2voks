@@ -139,7 +139,7 @@ public class CobasWin {
     		if (ggKto.length() == 7) {
     			current.setGegenKonto(ggKto.substring(1));
     		} else {
-    			ApplicationLogger.getInstance().getLogger().warning("Found 6-digit account number " + kto + " in record " + current.getRecordNummer() + ", not migrating");
+    			ApplicationLogger.getInstance().getLogger().warning("Found 6-digit account number " + ggKto + " in record " + current.getRecordNummer() + ", not migrating");
     		}
     	}
     }
