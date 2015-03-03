@@ -6,9 +6,12 @@ import java.util.List;
 
 import ctvdkip.business.CobasWin;
 import ctvdkip.business.Voks;
+import ctvdkip.database.agenda.AgendaRecordWriter;
 import ctvdkip.database.cobaswin.CobasWinDB;
 import ctvdkip.database.voks.AccountingRecord;
 import ctvdkip.database.voks.AccountingRecordWriter;
+import ctvdkip.database.voks.VoksDebitorRecord;
+import ctvdkip.database.voks.VoksKreditorRecord;
 import ctvdkip.gui.SplashWindow;
 import ctvdkip.util.ApplicationLogger;
 
@@ -31,12 +34,12 @@ public class CTVDKIP {
 		// checking input
 		if (2 > p_args.length){
 			System.out.println("Usage  : Specify ImportType as Parameter of this Programm\n");
-			System.out.println("Example: CobasWinToVoks or NavisionToVoks\n");
+			System.out.println("Example: CobasWinToVoks or GenerateAgendaAccountingRecordsFromCobasWin\n");
 			System.out.println("HIC SUNT DRACONIS: Specifying a second parameter means using 7->6 account number migration\n");
 			System.out.println("System is exiting ...\n");
 			ApplicationLogger.getInstance().getLogger().severe(
 				"Usage  : Specify ImportType as Parameter of this Programm | "+
-				"Example: CobasWinToVoks or NavisionToVoks | "+
+				"Example: CobasWinToVoks or GenerateAgendaAccountingRecordsFromCobasWin | "+
 				"HIC SUNT DRACONIS: Specifying a second parameter means using 7->6 account number migration | "+
 				"System is exiting ..."
 			);
@@ -67,6 +70,16 @@ public class CTVDKIP {
 				"Parameter GenerateAccountingRecordsFromCobasWin accepted"
 			);
             doingGenerateAccountingRecordsFromCobasWin(doAccountNumberDownsizing);
+		} else if(_argument.equals("GenerateAgendaAccountingRecordsFromCobasWin")) {
+			ApplicationLogger.getInstance().getLogger().info(
+					"Parameter GenerateAgendaAccountingRecordsFromCobasWin accepted"
+			);
+			doingGenerateAgendaAccountingRecordsFromCobasWin();
+		} else if (_argument.equals("GenerateAgendaPersonAccountsFromCobasWin")) {
+			ApplicationLogger.getInstance().getLogger().info(
+					"Parameter GenerateAgendaPersonAccountsFromCobasWin accepted"
+			);
+			doingGenerateAgendaPersonAccountsFromCobasWin();
 		}
 		else{
 			ApplicationLogger.getInstance().getLogger().severe(
@@ -75,8 +88,6 @@ public class CTVDKIP {
 			);
 		};//end if
 		
-		
-
 		
 		ApplicationLogger.getInstance().getLogger().info(
 				"Applikation is shuting down ..."
@@ -147,6 +158,80 @@ public class CTVDKIP {
         return true;
     }
 
+    
+    private static boolean doingGenerateAgendaAccountingRecordsFromCobasWin() {
+    	final CobasWinDB cobaswinDb = new CobasWinDB();
+    	final AgendaRecordWriter recordwriter = new AgendaRecordWriter();
+    	
+    	final List<AccountingRecord> accountingRecords;
+        try{
+        	accountingRecords = cobaswinDb.getAllNewAcountingRecords();
+        }
+        catch(SQLException sql_ex){
+            ApplicationLogger.getInstance().getLogger().severe("Could not get AccountingRecords from CobasWin :(");
+            return false;
+        }
+        
+        if(!recordwriter.writeAgendaAccountingRecordsToFile(accountingRecords)){
+            ApplicationLogger.getInstance().getLogger().severe("Could not save Agenda AccountingRecords to File :(");
+            return false;
+        }
+        else{
+            //setting status in cobaswin = verarbeitet
+            if(!cobaswinDb.setAccountingRecordsVerarbeitet(accountingRecords)){
+                //status changing error :(
+                ApplicationLogger.getInstance().getLogger().severe("Could not set AccountingRecords in CobasWin Status = Verarbeitet :(");
+                ApplicationLogger.getInstance().getLogger().severe("Do NOT import generated Accounting File !!!!");
+            return false;
+            }
+        }        
+
+        return true;
+    	
+    }
+    
+    private static boolean doingGenerateAgendaPersonAccountsFromCobasWin() {
+    	final CobasWinDB cobaswinDb = new CobasWinDB();
+    	final AgendaRecordWriter recordwriter = new AgendaRecordWriter();
+    	
+    	final List<VoksDebitorRecord> debitors;
+    	final List<VoksKreditorRecord> kreditors;
+    	
+        /**
+         * getting all debitors from cobaswin
+         */
+        ApplicationLogger.getInstance().getLogger().info("getting all debitors from cobaswin ...");
+        try {
+        	debitors = cobaswinDb.getAllDebitors();
+        } catch (SQLException e) {
+            ApplicationLogger.getInstance().getLogger().info("getting all debitors from cobaswin ... FAILED");
+            ApplicationLogger.getInstance().getLogger().severe("Could not get allcobaswindebitors :(");
+            return false;
+        }
+        ApplicationLogger.getInstance().getLogger().info("getting all debitors from cobaswin ... OK");
+        
+        /**
+         * getting all kreditors from cobaswin
+         */
+        ApplicationLogger.getInstance().getLogger().info("getting all kreditors from cobaswin ...");
+        try {
+        	kreditors = cobaswinDb.getAllKreditors();
+        } catch (SQLException e) {
+            ApplicationLogger.getInstance().getLogger().info("getting all kreditors from cobaswin ... FAILED");
+            ApplicationLogger.getInstance().getLogger().severe("Could not get allcobaswinkreditors :(");
+            return false;
+        }
+        ApplicationLogger.getInstance().getLogger().info("getting all kreditors from cobaswin ... OK");
+        
+        ApplicationLogger.getInstance().getLogger().info("Writing debitors and kreditors to file ...");
+        if(!recordwriter.writeAgendaPersonAccountsToFile(debitors, kreditors)){
+            ApplicationLogger.getInstance().getLogger().severe("Could not save Agenda person accounts to File :(");
+            return false;
+        }
+        ApplicationLogger.getInstance().getLogger().info("Writing debitors and kreditors to file ... OK");
+
+        return true;
+    }
 
 
 }//end class
