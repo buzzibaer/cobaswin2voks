@@ -46,9 +46,9 @@ public class AgendaRecordWriter {
             b.append(";");
             b.append(record.getSkonto());
             b.append(";");
-            b.append(record.getKostenstelle());
+            //b.append(record.getKostenstelle()); -- kostenstelle soll ins agenda nicht übernommen werden, dann fängt die automatik an zu spinnen
             b.append(";");
-            b.append(record.getKosteenstelleVomKonto());
+            //b.append(record.getKosteenstelleVomKonto()); -- kostenstelle soll ins agenda nicht übernommen werden, dann fängt die automatik an zu spinnen
             b.append(";");
             writer.write(b.toString());
             writer.newLine();
@@ -141,8 +141,9 @@ public class AgendaRecordWriter {
             b.append(";");
             b.append(record.getZahlungsBedingungsCode());
             b.append(";");
-            b.append(record.getEmail());
+            //b.append(record.getUstID()); -- kreditoren UStID wird direkt in der Buchhaltung angelegt, nicht aus CobasWin
             b.append(";");
+            writer.write(b.toString());
             writer.newLine();
          }
 
