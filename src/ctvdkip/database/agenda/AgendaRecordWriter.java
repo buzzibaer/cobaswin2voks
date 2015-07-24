@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import ctvdkip.business.PaymentCodes;
 import ctvdkip.database.voks.AccountingRecord;
 import ctvdkip.database.voks.VoksDebitorRecord;
 import ctvdkip.database.voks.VoksKreditorRecord;
@@ -82,7 +83,7 @@ public class AgendaRecordWriter {
          writer = new BufferedWriter(new FileWriter("Agenda_Personenkonten_" + fmt.format(cal.getTime()) + ".csv"));
 
          //Header
-         writer.write("Konto;Name1;Name2;Strasse;Land;PLZ;Ort;Telefon;Telefax;E-Mail;Zahlungsbedingung;EUID;");
+         writer.write("Konto;Name1;Name2;Strasse;Land;PLZ;Ort;Telefon;Telefax;E-Mail;EUID;Faellig-Netto;Faellig-1;Skonto-1;Faellig-2;Skonto-2;Zahlungsbedingung;");
          writer.newLine();
 
          //Debitoren
@@ -108,10 +109,15 @@ public class AgendaRecordWriter {
             b.append(";");
             b.append(record.getEmail());
             b.append(";");
-            b.append(record.getZahlungsBedingungsCode());
-            b.append(";");
             b.append(record.getUstID());
             b.append(";");
+            if (record.getZahlungsBedingungsCode() != null) {
+               final int code = Integer.parseInt(record.getZahlungsBedingungsCode());
+               final PaymentCodes paymentCode = PaymentCodes.getById(code);
+               writer.write(paymentCode.getCsvString());
+            } else {
+               writer.write(";;;;;");
+            }
             writer.write(b.toString());
             writer.newLine();
          }
@@ -139,10 +145,9 @@ public class AgendaRecordWriter {
             b.append(";");
             b.append(record.getEmail());
             b.append(";");
-            b.append(record.getZahlungsBedingungsCode());
-            b.append(";");
             //b.append(record.getUstID()); -- kreditoren UStID wird direkt in der Buchhaltung angelegt, nicht aus CobasWin
             b.append(";");
+            b.append(";;;;;"); //Zahlungsbedingungscodes nur für Debitoren
             writer.write(b.toString());
             writer.newLine();
          }
