@@ -34,9 +34,9 @@ public class AgendaRecordWriter {
             b.append(record.getBelegDatum());
             b.append(";");
             b.append(record.getBelegNummer());
-            b.append(";");
+            b.append(";\"");
             b.append(record.getBelegText());
-            b.append(";");
+            b.append("\";");
             b.append(record.getKonto());
             b.append(";");
             b.append(record.getGegenKonto());
@@ -90,25 +90,25 @@ public class AgendaRecordWriter {
          for (final VoksDebitorRecord record : debitors) {
             final StringBuilder b = new StringBuilder();
             b.append(record.getKundenNr());
-            b.append(";");
+            b.append(";\"");
             b.append(record.getName());
-            b.append(";");
+            b.append("\";\"");
             b.append(record.getZusatz());
-            b.append(";");
+            b.append("\";\"");
             b.append(record.getStrasse());
-            b.append(";");
+            b.append("\";\"");
             b.append(record.getLand());
-            b.append(";");
+            b.append("\";");
             b.append(record.getPLZ());
-            b.append(";");
+            b.append(";\"");
             b.append(record.getOrt());
-            b.append(";");
+            b.append("\";\"");
             b.append(record.getTelefon());
-            b.append(";");
+            b.append("\";\"");
             b.append(record.getFax());
-            b.append(";");
+            b.append("\";\"");
             b.append(record.getEmail());
-            b.append(";");
+            b.append("\";");
             b.append(record.getUstID());
             b.append(";");
             if (record.getZahlungsBedingungsCode() != null) {
@@ -140,25 +140,25 @@ public class AgendaRecordWriter {
          for (final VoksKreditorRecord record : kreditors) {
             final StringBuilder b = new StringBuilder();
             b.append(record.getLieferantenNr());
-            b.append(";");
+            b.append(";\"");
             b.append(record.getName());
-            b.append(";");
+            b.append("\";\"");
             b.append(record.getZusatz());
-            b.append(";");
+            b.append("\";\"");
             b.append(record.getStrasse());
-            b.append(";");
+            b.append("\";\"");
             b.append(record.getLand());
-            b.append(";");
+            b.append("\";");
             b.append(record.getPLZ());
-            b.append(";");
+            b.append(";\"");
             b.append(record.getOrt());
-            b.append(";");
+            b.append("\";\"");
             b.append(record.getTelefon());
-            b.append(";");
+            b.append("\";\"");
             b.append(record.getFax());
-            b.append(";");
+            b.append("\";\"");
             b.append(record.getEmail());
-            b.append(";");
+            b.append("\";");
             //b.append(record.getUstID()); -- kreditoren UStID wird direkt in der Buchhaltung angelegt, nicht aus CobasWin
             b.append(";");
             b.append(";;;;;"); //Zahlungsbedingungscodes nur für Debitoren
