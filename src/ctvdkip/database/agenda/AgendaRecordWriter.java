@@ -114,10 +114,24 @@ public class AgendaRecordWriter {
             if (record.getZahlungsBedingungsCode() != null) {
                final int code = Integer.parseInt(record.getZahlungsBedingungsCode());
                final PaymentCodes paymentCode = PaymentCodes.getById(code);
-               writer.write(paymentCode.getCsvString());
+               if (paymentCode == PaymentCodes.PC0) {
+                  ApplicationLogger
+                        .getInstance()
+                        .getLogger()
+                        .warning(
+                              "ACHTUNG: Debitor " + record.getKundenNr() + " hat Zahlungsbedingungscode 0, bitte im Cobaswin korrigieren!");
+               }
+               b.append(paymentCode.getCsvString());
             } else {
-               writer.write(";;;;;");
+               ApplicationLogger
+                     .getInstance()
+                     .getLogger()
+                     .warning(
+                           "ACHTUNG: Debitor " + record.getKundenNr()
+                                 + " hat keinen Zahlungsbedingungscode, bitte im Cobaswin korrigieren!");
+               b.append(";;;;;");
             }
+            b.append(";");
             writer.write(b.toString());
             writer.newLine();
          }
@@ -148,6 +162,7 @@ public class AgendaRecordWriter {
             //b.append(record.getUstID()); -- kreditoren UStID wird direkt in der Buchhaltung angelegt, nicht aus CobasWin
             b.append(";");
             b.append(";;;;;"); //Zahlungsbedingungscodes nur für Debitoren
+            b.append(";");
             writer.write(b.toString());
             writer.newLine();
          }

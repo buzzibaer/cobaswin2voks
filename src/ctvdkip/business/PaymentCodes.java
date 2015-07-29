@@ -5,6 +5,7 @@ import java.util.Locale;
 
 public enum PaymentCodes {
 
+   PC0(0, "Dummy, unvollständiger Datensatz", 'F'),
    PC1(1, "14Tage3%-60Tage netto", 60, 14, 3, '1'),
    PC2(2, "14Tage2%-30Tage netto", 30, 14, 2, '1'),
    PC3(3, "sofort netto", 1, '1'),
