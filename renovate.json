@@ -11,7 +11,7 @@
   "labels": ["dependencies", "renovate"],
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
-  "minimumReleaseAge": "3 days",
+  "minimumReleaseAge": "0 days",
   "schedule": ["at any time"],
   "packageRules": [
     {
