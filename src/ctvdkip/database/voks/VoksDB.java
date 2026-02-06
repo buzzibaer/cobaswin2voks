@@ -15,6 +15,10 @@ import java.util.Iterator;
  * @author rbust
  */
 public class VoksDB {
+	private static final String DRIVER_PROPERTY = "ctvdkip.voks.jdbc.driver";
+	private static final String URL_PROPERTY = "ctvdkip.voks.jdbc.url";
+	private static final String USER_PROPERTY = "ctvdkip.voks.jdbc.user";
+	private static final String PASSWORD_PROPERTY = "ctvdkip.voks.jdbc.password";
 	
 	/**
 	 * The database connection object
@@ -67,7 +71,7 @@ public class VoksDB {
 			while (_rs.next()){
 				
 				Integer _int;
-				_int = new Integer(_rs.getInt(VoksTableKunden.ZAHLUNGSBEDINGUNGSCODE));
+				_int = Integer.valueOf(_rs.getInt(VoksTableKunden.ZAHLUNGSBEDINGUNGSCODE));
 /*
                 ApplicationLogger.getInstance().getLogger().info(
 						"ZB Value = "+ _int
@@ -111,32 +115,37 @@ public class VoksDB {
 	 * opens the dbConnectionnectino to the database
 	 */
 	private void open(){
-		
-		// odbc string
-		String _odbcstring = "sun.jdbc.odbc.JdbcOdbcDriver";
-		String _dbConnectionString = "jdbc:odbc:VoksDB";
-		
-		// Loading Driver and opening dbConnectionnection
-		try{
-			Class.forName(_odbcstring);
+		final String driver = readConfig(DRIVER_PROPERTY, "CTV_VOKS_JDBC_DRIVER", "");
+		final String connectionUrl = readConfig(URL_PROPERTY, "CTV_VOKS_JDBC_URL", "jdbc:odbc:VoksDB");
+		final String user = readConfig(USER_PROPERTY, "CTV_VOKS_JDBC_USER", "");
+		final String password = readConfig(PASSWORD_PROPERTY, "CTV_VOKS_JDBC_PASSWORD", "");
+
+		if (!driver.isEmpty()) {
+			try{
+				Class.forName(driver);
+			}
+			catch(ClassNotFoundException _classNotFoundEx){
+				ApplicationLogger.getInstance().getLogger().severe(
+						"Could not load configured Voks JDBC driver: " + driver
+				);
+				ApplicationLogger.getInstance().getLogger().severe(
+						"System is shuting down ..."
+				);
+				System.exit(0);
+			}
 		}
-		catch(ClassNotFoundException _classNotFoundEx){
-			ApplicationLogger.getInstance().getLogger().severe(
-					"ODBC String for Voks DB is not valid :("
-			);
-			ApplicationLogger.getInstance().getLogger().severe(
-					"System is shuting down ..."
-			);
-			System.exit(0);
-		}
 		
 		try{
-			dbConnection = DriverManager.getConnection(_dbConnectionString);
+			if (user.isEmpty() && password.isEmpty()) {
+				dbConnection = DriverManager.getConnection(connectionUrl);
+			} else {
+				dbConnection = DriverManager.getConnection(connectionUrl, user, password);
+			}
 		}
 		catch (SQLException p_sqlex ) {
 			
 			ApplicationLogger.getInstance().getLogger().severe(
-					"Could not open VoksDB. DB is configured for exclusivly and maybe still open by Voks?"
+					"Could not open VoksDB via " + connectionUrl + ". DB is configured for exclusivly and maybe still open by Voks?"
 			);
 			ApplicationLogger.getInstance().getLogger().severe(
 					"System is shuting down ..."
@@ -159,36 +168,41 @@ public class VoksDB {
 	 *
 	 */
 	private boolean close(){
-		
-		//closing DB Connection
-		try{
-			dbConnection.close();	
+		if (dbConnection != null) {
+			try{
+				dbConnection.close();	
+			}
+			catch(SQLException p_sqlex){
+				ApplicationLogger.getInstance().getLogger().severe(
+						"Could not close VoksDB. Maybe it is already closed?"
+				);
+				return false;
+			}
 		}
-		catch(SQLException p_sqlex){
-			ApplicationLogger.getInstance().getLogger().severe(
-					"Could not close VoksDB. Maybe it is already closed?"
-			);
-			return false;
-		};
 		
-		try{
-			statement.close();
-		}
-		catch(SQLException ex){
-			ApplicationLogger.getInstance().getLogger().severe(
-					"Could not close Statement from Voks DB :( = "+ ex
-			);
+		if (statement != null) {
+			try{
+				statement.close();
+			}
+			catch(SQLException ex){
+				ApplicationLogger.getInstance().getLogger().severe(
+						"Could not close Statement from Voks DB :( = "+ ex
+				);
+			}
 		}
 		return true;
 	};
-	
-	/**
-	 * Schliesst die Connectin zur Datenbank.
-	 * Diese Methode garantiert das Schliesesn der DB.
-	 *
-	 */
-	protected void finalize(){
-		this.close();
+
+	private static String readConfig(final String propertyName, final String envName, final String defaultValue) {
+		final String propertyValue = System.getProperty(propertyName);
+		if (propertyValue != null && !propertyValue.trim().isEmpty()) {
+			return propertyValue.trim();
+		}
+		final String envValue = System.getenv(envName);
+		if (envValue != null && !envValue.trim().isEmpty()) {
+			return envValue.trim();
+		}
+		return defaultValue;
 	}
 
      /**
