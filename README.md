@@ -1,8 +1,8 @@
 # cobaswin2voks
 
-Legacy CobasWin export and synchronization utility for Voks and Agenda.
+Adapter utility that bridges data between CobasWin and Voks (plus Agenda export files).
 
-This repository has been modernized from an Eclipse-only Java 6 project to a Maven-based Java 25 project while preserving legacy business behavior.
+This repository has been modernized from an Eclipse-only Java 6 project to a Maven-based Java 25 project while preserving legacy integration behavior.
 
 ## Modernization summary
 
@@ -16,20 +16,28 @@ This repository has been modernized from an Eclipse-only Java 6 project to a Mav
 
 ## Technical architecture
 
+### System boundaries
+
+- `CobasWin` is a standalone source system. It remains authoritative for the records this adapter reads.
+- `Voks` is a standalone target system. It remains authoritative for the records this adapter writes.
+- `cobaswin2voks` is an integration adapter only. It does not replace either system's business logic or UI.
+- Adapter responsibilities are limited to connectivity, validation, mapping/format conversion, and transfer orchestration.
+- Changes in CobasWin or Voks schemas/interfaces may require adapter mapping updates.
+
 ### High-level modules
 
-- `ctvdkip.CTVDKIP`: application entrypoint and mode dispatcher.
-- `ctvdkip.business.Voks`: orchestration for CobasWin-to-Voks synchronization.
-- `ctvdkip.business.CobasWin`: split and migration helper logic.
-- `ctvdkip.database.cobaswin.CobasWinDB`: CobasWin JDBC access layer.
-- `ctvdkip.database.voks.VoksDB`: Voks JDBC access layer.
+- `ctvdkip.CTVDKIP`: adapter entrypoint and mode dispatcher.
+- `ctvdkip.business.Voks`: adapter orchestration for CobasWin-to-Voks synchronization.
+- `ctvdkip.business.CobasWin`: adapter split and migration helper logic.
+- `ctvdkip.database.cobaswin.CobasWinDB`: adapter-side CobasWin JDBC access layer.
+- `ctvdkip.database.voks.VoksDB`: adapter-side Voks JDBC access layer.
 - `ctvdkip.database.voks.AccountingRecordWriter`: writes legacy Voks import text files.
 - `ctvdkip.database.agenda.AgendaRecordWriter`: writes Agenda CSV export files.
 - `ctvdkip.util.ApplicationLogger`: file logger (`Application.log`).
 
 ### Runtime modes
 
-The first CLI argument selects execution mode:
+The first CLI argument selects adapter execution mode:
 
 - `CobasWinToVoks`: syncs debitors/kreditors from CobasWin into Voks.
 - `GenerateAccountingRecordsFromCobasWin`: writes Voks accounting import file and marks exported CobasWin records as processed.
