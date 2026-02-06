@@ -7,13 +7,12 @@
     ":separateMajorReleases",
     ":timezone(Europe/Zurich)"
   ],
-  "onboarding": true,
   "enabledManagers": ["maven"],
   "labels": ["dependencies", "renovate"],
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
-  "minimumReleaseAge": "0 days",
-  "schedule": ["at any time"],
+  "minimumReleaseAge": "3 days",
+  "schedule": ["before 6am on monday"],
   "packageRules": [
     {
       "matchManagers": ["maven"],
