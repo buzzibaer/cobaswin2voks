@@ -7,6 +7,7 @@
     ":separateMajorReleases",
     ":timezone(Europe/Zurich)"
   ],
+  "onboarding": true,
   "enabledManagers": ["maven"],
   "labels": ["dependencies", "renovate"],
   "prConcurrentLimit": 5,
